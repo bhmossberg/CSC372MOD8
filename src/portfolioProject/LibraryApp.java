@@ -3,6 +3,19 @@ package portfolioProject;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * The main application class for library management system.
+ * This class provides a console-based menu interface that allows users to:
+ *    Add new books to the library
+ *    Borrow books from the main inventory
+ *    Return borrowed books
+ *    Search for books by title
+ *    View all available books
+ * The class uses Inventory.java to manage book data and includes
+ * exception handling for invalid user input.
+ *
+ * @author Benjamin Mossberg
+ */
 public class LibraryApp {
 
     public static void main(String[] args) {
@@ -18,7 +31,9 @@ public class LibraryApp {
         Scanner scanner = new Scanner(System.in);
         boolean run = true;
 
-        System.out.println("WELCOME TO THE LIBRARY MANAGEMENT SYSTEM");
+        System.out.println("============================================");
+        System.out.println("  WELCOME TO THE LIBRARY MANAGEMENT SYSTEM");
+        System.out.println("============================================");
 
         while (run) {
             printMenu();
@@ -78,8 +93,16 @@ public class LibraryApp {
         System.out.println("\n--- Add New Book ---");
 
         int id = 0;
-        System.out.print("Enter book ID: ");
-        id = Integer.parseInt(scanner.nextLine().trim());
+        boolean validId = false;
+        while (!validId) {
+            try {
+                System.out.print("Enter book ID: ");
+                id = Integer.parseInt(scanner.nextLine().trim());
+                validId = true;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid ID. Please enter a numeric value.");
+            }
+        }
 
         System.out.print("Enter title: ");
         String title = scanner.nextLine().trim();
@@ -90,27 +113,55 @@ public class LibraryApp {
         System.out.print("Enter ISBN: ");
         String isbn = scanner.nextLine().trim();
 
-        System.out.print("Enter number of pages: ");
-        int pages = Integer.parseInt(scanner.nextLine().trim());
+        int pages = 0;
+        boolean validPages = false;
+        while (!validPages) {
+            try {
+                System.out.print("Enter number of pages: ");
+                pages = Integer.parseInt(scanner.nextLine().trim());
+                if (pages > 0) {
+                    validPages = true;
+                } else {
+                    System.out.println("Number of pages must be greater than 0.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a numeric value for pages.");
+            }
+        }
+
         inventory.addBook(id, title, author, isbn, pages);
     }
 
     // === BORROW BOOK ===
     private static void borrowBookFlow(Inventory inventory, Scanner scanner) {
         System.out.println("\n--- Borrow Book ---");
-        System.out.print("Enter the unique ID of the book to borrow: ");
-        int bookId = Integer.parseInt(scanner.nextLine().trim());
-        inventory.borrowBook(bookId);
+
+        if (inventory.getMainInventoryCount() == 0) {
+            System.out.println("No books available to borrow.");
+            return;
+        }
+
+        try {
+            System.out.print("Enter the unique ID of the book to borrow: ");
+            int bookId = Integer.parseInt(scanner.nextLine().trim());
+            inventory.borrowBook(bookId);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid ID. Please enter a numeric book ID.");
+        }
     }
 
     // === RETURN BOOK ===
     private static void returnBookFlow(Inventory inventory, Scanner scanner) {
         System.out.println("\n--- Return Book ---");
         inventory.printBorrowedBooks();
-        System.out.print("Enter the ID of the book to return: ");
-        int bookId = Integer.parseInt(scanner.nextLine().trim());
-        inventory.returnBook(bookId);
 
+        try {
+            System.out.print("Enter the ID of the book to return: ");
+            int bookId = Integer.parseInt(scanner.nextLine().trim());
+            inventory.returnBook(bookId);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid ID. Please enter a numeric book ID.");
+        }
     }
 
     // === SEARCH BY TITLE ===

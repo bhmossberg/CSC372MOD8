@@ -1,5 +1,10 @@
 package portfolioProject;
-
+/**
+ * Represents a single book in the library management system.
+ * Each book has a unique ID, title, author, ISBN, and page count.
+ * This class provides basic getters, setters, and a method to display book information.
+ * @author Benjamin Mossberg
+ */
 public class Book {
     private int id;
     private String title;
@@ -18,7 +23,7 @@ public class Book {
         this.numberOfPages = numberOfPages;
     }
 
-    // Getters & Setters
+    // Getters & Setters (all public)
     public int getId() { 
     	return id; 
     }
