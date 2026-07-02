@@ -30,14 +30,13 @@ public class Inventory {
      * @param numberOfPages the number of pages
      * @return true if the book was added successfully, false if the ID already exists
      */
-    
     public boolean addBook(int id, String title, String author, String isbn, int numberOfPages) {
         if (findBookById(mainInventory, id) != null || findBookById(borrowedBooks, id) != null) {
             System.out.println("Error: A book with ID " + id + " already exists.");
             return false;
         }
         mainInventory.add(new Book(id, title, author, isbn, numberOfPages));
-        System.out.println(title + " added to the library.");
+        System.out.println(title + " added to the library. " + getQuantity(title) + " Available");
         return true;
     }
 
@@ -57,7 +56,7 @@ public class Inventory {
         }
         mainInventory.remove(book);
         borrowedBooks.add(book);
-        System.out.println(book.getTitle() + " successfully borrowed.");
+        System.out.println(book.getTitle() + " successfully borrowed. Remaining copies: " + getQuantity(book.getTitle()));
     }
 
     /**
@@ -73,7 +72,7 @@ public class Inventory {
         if (book != null) {
             borrowedBooks.remove(book);
             mainInventory.add(book);
-            System.out.println("Book successfully returned.");
+            System.out.println("Book successfully returned. Available copies: " + getQuantity(book.getTitle()));
         } else {
             System.out.println("Error: Book with ID " + bookId + " is not in the borrowed list.");
         }
@@ -115,6 +114,45 @@ public class Inventory {
      */
     public int getMainInventoryCount() {
         return mainInventory.size();
+    }
+    
+    /**
+     * Returns the number of books currently in the borrowed list.
+     * @return the count of borrowed books
+     */
+    public int getBorrowedCount() {
+        return borrowedBooks.size();
+    }
+    
+    /**
+     * Checks whether a book with the given ID already exists in either list.
+     * @param id the book ID to check
+     * @return true if the ID is already in use
+     */
+    public boolean idExists(int id) {
+        return findBookById(mainInventory, id) != null || findBookById(borrowedBooks, id) != null;
+    }
+    
+    /**
+     * Returns the number of available copies (in main inventory)
+     * for the given book title. Case-insensitive exact match.
+     *
+     * @param title the title to count available copies for
+     * @return number of matching copies currently available
+     */
+    public int getQuantity(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            return 0;
+        }
+        int numCopies = 0;
+        String lower = title.toLowerCase().trim();
+        
+        for (Book book : mainInventory) {
+            if (book.getTitle().toLowerCase().trim().equals(lower)) {
+                numCopies++;
+            }
+        }
+        return numCopies;
     }
     
     /**
